@@ -164,3 +164,4 @@ cython_debug/
 # Project specific
 *.xlsx
 .DS_Store
+*.ipynb

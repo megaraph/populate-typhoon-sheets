@@ -1,11 +1,14 @@
 from openpyxl import load_workbook
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from pathlib import Path
+import calendar
 
 WB_NAME = "Typhoon Marilyn.xlsx"
 WB_PATH = Path.cwd().joinpath(WB_NAME)  # path to excel spreadsheet
 
 TYPHOON_DATE = "2019-09-12"
+TYPHOON_RANGE = 2
 
 WB = load_workbook(filename=WB_NAME, data_only=True)
 
@@ -29,6 +32,15 @@ def populate():
     # Convert typhoon date from a string into a datetime object
     typhoon_date = datetime(*[int(num) for num in TYPHOON_DATE.split("-")])
 
+    # Typhoon Date Lower and Upper Bounds (+/- 2 months)
+    date_before = typhoon_date - relativedelta(months=TYPHOON_RANGE)
+    date_lower = datetime(date_before.year, date_before.month, 1)
+
+    date_after = typhoon_date + relativedelta(months=TYPHOON_RANGE)
+    month_last_day = calendar.monthrange(date_after.year, date_after.month)[1]
+    date_upper = datetime(date_after.year, date_after.month, month_last_day)
+
+    # before and after datasets
     before = []
     after = []
 
@@ -40,11 +52,11 @@ def populate():
             continue
 
         # Before the typhoon
-        if date <= typhoon_date:
+        if date <= typhoon_date and date >= date_lower:
             before.append(row)
 
         # After the typhoon
-        if date > typhoon_date:
+        if date > typhoon_date and date <= date_upper:
             after.append(row)
 
     # Populate before sheets

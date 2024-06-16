@@ -19,8 +19,8 @@ def populate():
     titles = [header.value for header in general_sheet[1]]
 
     # Get all sheetnames except General
-    general_index = WB.sheetnames.index("General")
-    all_sheets = WB.sheetnames[general_index + 1 :]
+    exclude = ["general", "correlation before", "correlation after"]
+    all_sheets = [sheet for sheet in WB.sheetnames if sheet.lower() not in exclude]
 
     # Clear all sheets except General
     if not len(all_sheets) == 0:
